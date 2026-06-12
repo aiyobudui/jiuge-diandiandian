@@ -32,7 +32,7 @@ namespace JiuGeKeyClick
         private void InitializeComponent()
         {
             this.SuspendLayout();
-            this.Text = $"九歌键鼠助手 v{Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "1.2.0"}";
+            this.Text = $"九歌键鼠助手 v{Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.2.0"}";
             this.Icon = LoadAppIcon();
             this.ShowIcon = false;
             this.Size = new Size(780, 580);
@@ -77,6 +77,30 @@ namespace JiuGeKeyClick
                 ForeColor = SystemColors.GrayText
             };
             countPanel.Controls.Add(lblActionCount);
+
+            // 关于按钮（右下角）
+            Button btnAboutBottom = new Button
+            {
+                Text = "关于",
+                Size = new Size(55, 23),
+                Font = defaultFont,
+                UseVisualStyleBackColor = true,
+                Margin = new Padding(0),
+            };
+            btnAboutBottom.Click += (s, e) =>
+            {
+                using (AboutDialog dlg = new AboutDialog())
+                    dlg.ShowDialog(this);
+            };
+            countPanel.Controls.Add(btnAboutBottom);
+
+            // 右对齐关于按钮
+            countPanel.Resize += (s, e) =>
+            {
+                btnAboutBottom.Location = new Point(countPanel.ClientSize.Width - btnAboutBottom.Width - 2, 4);
+            };
+            // 初始化位置
+            btnAboutBottom.Location = new Point(countPanel.ClientSize.Width - btnAboutBottom.Width - 2, 4);
 
             mainPanel.Controls.Add(countPanel, 0, 3);
 
@@ -303,6 +327,8 @@ namespace JiuGeKeyClick
             _trayMenu.Items.Add("▶ 启动", null, TrayMenu_Start);
             _trayMenu.Items.Add("-");
             _trayMenu.Items.Add("⏹ 停止", null, TrayMenu_Stop);
+            _trayMenu.Items.Add("-");
+            _trayMenu.Items.Add("ℹ 关于", null, TrayMenu_About);
             _trayMenu.Items.Add("-");
             _trayMenu.Items.Add("❌ 退出", null, TrayMenu_Exit);
             _notifyIcon.ContextMenuStrip = _trayMenu;
@@ -782,6 +808,14 @@ namespace JiuGeKeyClick
         private void TrayMenu_Stop(object sender, EventArgs e)
         {
             StopRunning();
+        }
+
+        private void TrayMenu_About(object sender, EventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            using (AboutDialog dlg = new AboutDialog())
+                dlg.ShowDialog(this);
         }
 
         private void TrayMenu_Exit(object sender, EventArgs e)

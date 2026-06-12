@@ -89,13 +89,13 @@ namespace JiuGeKeyClick
                     SimulateKeyPress(action.Key);
                     break;
                 case ActionType.MouseLeft:
-                    SimulateMouseClick(NativeMethods.MOUSEEVENTF_LEFTDOWN, NativeMethods.MOUSEEVENTF_LEFTUP, action.MouseX, action.MouseY);
+                    SimulateMouseClick(NativeMethods.MOUSEEVENTF_LEFTDOWN, NativeMethods.MOUSEEVENTF_LEFTUP, action);
                     break;
                 case ActionType.MouseRight:
-                    SimulateMouseClick(NativeMethods.MOUSEEVENTF_RIGHTDOWN, NativeMethods.MOUSEEVENTF_RIGHTUP, action.MouseX, action.MouseY);
+                    SimulateMouseClick(NativeMethods.MOUSEEVENTF_RIGHTDOWN, NativeMethods.MOUSEEVENTF_RIGHTUP, action);
                     break;
                 case ActionType.MouseMiddle:
-                    SimulateMouseClick(NativeMethods.MOUSEEVENTF_MIDDLEDOWN, NativeMethods.MOUSEEVENTF_MIDDLEUP, action.MouseX, action.MouseY);
+                    SimulateMouseClick(NativeMethods.MOUSEEVENTF_MIDDLEDOWN, NativeMethods.MOUSEEVENTF_MIDDLEUP, action);
                     break;
             }
             
@@ -141,9 +141,12 @@ namespace JiuGeKeyClick
             return keys;
         }
 
-        private void SimulateMouseClick(uint downFlag, uint upFlag, int x, int y)
+        private void SimulateMouseClick(uint downFlag, uint upFlag, ActionItem action)
         {
-            NativeMethods.SetCursorPos(x, y);
+            if (action.UseMousePos)
+            {
+                NativeMethods.SetCursorPos(action.MouseX, action.MouseY);
+            }
             NativeMethods.mouse_event(downFlag, 0, 0, 0, UIntPtr.Zero);
             Thread.Sleep(10);
             NativeMethods.mouse_event(upFlag, 0, 0, 0, UIntPtr.Zero);

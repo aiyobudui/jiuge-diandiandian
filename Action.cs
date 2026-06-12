@@ -28,6 +28,7 @@ namespace JiuGeKeyClick
         public string Comment { get; set; }
         public int MouseX { get; set; }
         public int MouseY { get; set; }
+        public bool UseMousePos { get; set; }
         public string Group { get; set; }
         public LoopMode LoopMode { get; set; }
 
@@ -42,6 +43,7 @@ namespace JiuGeKeyClick
             Comment = string.Empty;
             MouseX = 0;
             MouseY = 0;
+            UseMousePos = false;
             Group = string.Empty;
             LoopMode = LoopMode.Once;
         }
@@ -63,6 +65,7 @@ namespace JiuGeKeyClick
                 Comment = Comment,
                 MouseX = MouseX,
                 MouseY = MouseY,
+                UseMousePos = UseMousePos,
                 Group = Group,
                 LoopMode = LoopMode,
             };

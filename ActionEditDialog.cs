@@ -20,6 +20,7 @@ namespace JiuGeKeyClick
         private Label _lblMouseY;
         private Label _lblMouseTitle;
         private Label _lblCaptureHint;
+        private CheckBox _chkUseMousePos;
         private TextBox _txtComment;
         private Button _btnOK;
         private Button _btnCancel;
@@ -52,7 +53,7 @@ namespace JiuGeKeyClick
 
             int leftMargin = 20;
             int labelWidth = 100;
-            int inputWidth = 280;
+            int inputWidth = 360;
             int rowHeight = 36;
             int currentY = 16;
 
@@ -108,9 +109,8 @@ namespace JiuGeKeyClick
             {
                 Location = new Point(leftMargin + labelWidth + 4, currentY),
                 Size = new Size(inputWidth + 10, 36),
-                BackColor = Color.FromArgb(255, 248, 220),   // 浅黄色背景
-                BorderStyle = BorderStyle.FixedSingle,
-                Padding = new Padding(2)
+                BackColor = Color.Transparent,
+                BorderStyle = BorderStyle.None
             };
             this.Controls.Add(pnlKeyHighlight);
 
@@ -129,7 +129,6 @@ namespace JiuGeKeyClick
             _txtKey.Leave += (s, ev) =>
             {
                 _isRecording = false;
-                pnlKeyHighlight.BackColor = Color.FromArgb(255, 248, 220);
                 _txtKey.ForeColor = Color.FromArgb(200, 50, 50);
             };
             pnlKeyHighlight.Controls.Add(_txtKey);
@@ -291,20 +290,48 @@ namespace JiuGeKeyClick
             };
             this.Controls.Add(_txtMouseY);
 
-            // 捕获提示（始终显示，键盘类型时灰显）
+            // 启用坐标定位 复选框
+            _chkUseMousePos = new CheckBox
+            {
+                Text = "启用坐标定位（勾选后执行时鼠标移动到指定坐标）",
+                Location = new Point(leftMargin + labelWidth + 8, currentY + 32),
+                Size = new Size(inputWidth - 10, 28),
+                Font = labelFont,
+                Checked = _action.UseMousePos,
+                AutoSize = true
+            };
+            _chkUseMousePos.CheckedChanged += (s, e) =>
+            {
+                _action.UseMousePos = _chkUseMousePos.Checked;
+                // 勾选时注册捕获热键，取消时注销
+                if (_chkUseMousePos.Checked)
+                {
+                    NativeMethods.RegisterHotKey(this.Handle, NativeMethods.HOTKEY_ID_CAPTURE,
+                        NativeMethods.MOD_CONTROL | NativeMethods.MOD_SHIFT, (uint)Keys.Z);
+                }
+                else
+                {
+                    NativeMethods.UnregisterHotKey(this.Handle, NativeMethods.HOTKEY_ID_CAPTURE);
+                }
+                UpdateMouseControlsVisibility();
+            };
+            this.Controls.Add(_chkUseMousePos);
+
+            // 捕获提示
             _lblCaptureHint = new Label
             {
-                Location = new Point(leftMargin + labelWidth + 8, currentY + 36),
-                Size = new Size(inputWidth, 18),
+                Location = new Point(leftMargin + labelWidth + 8, currentY + 56),
+                Size = new Size(inputWidth - 20, 36),
                 Font = hintFont,
                 ForeColor = Color.FromArgb(100, 100, 180),
-                Text = "💡 提示：在屏幕任意位置按下 Ctrl + Shift + Z 可捕获当前鼠标坐标"
+                Text = "勾选后可按 Ctrl+Shift+Z 在屏幕任意位置捕获鼠标坐标",
+                AutoSize = true
             };
             this.Controls.Add(_lblCaptureHint);
 
             _lblMouseTitle = lblMousePos;
 
-            currentY += 60;
+            currentY += 100;
 
             // ===== 备注 =====
             Label lblComment = new Label
@@ -330,9 +357,9 @@ namespace JiuGeKeyClick
             currentY += 66;
 
             // ===== 按钮 =====
-            // 客户区宽度固定为 460，直接用它计算居中
+            // 客户区宽度固定为 540，直接用它计算居中
             int btnWidth = 90;
-            int btnCenterX = (460 - btnWidth * 2 - 20) / 2;  // = 130
+            int btnCenterX = (540 - btnWidth * 2 - 20) / 2;  // = 220
             int btnY = currentY + 16;
 
             _btnOK = new Button
@@ -373,8 +400,8 @@ namespace JiuGeKeyClick
 
             UpdateMouseControlsVisibility();
 
-            // 固定窗口大小（客户区 460×475）
-            this.ClientSize = new Size(460, 475);
+            // 固定窗口大小（客户区 540×495）
+            this.ClientSize = new Size(540, 495);
         }
 
         private void UpdateMouseControlsVisibility()
@@ -383,13 +410,25 @@ namespace JiuGeKeyClick
                                 _cboType.SelectedIndex == (int)ActionType.MouseRight ||
                                 _cboType.SelectedIndex == (int)ActionType.MouseMiddle;
 
-            // 坐标区域始终显示，键盘类型时禁用（灰色）
+            bool coordEnabled = isMouseAction && _chkUseMousePos != null && _chkUseMousePos.Checked;
+
+            // 坐标标签：鼠标动作时显示
             _lblMouseTitle.Enabled = isMouseAction;
-            _lblMouseX.Enabled = isMouseAction;
-            _lblMouseY.Enabled = isMouseAction;
-            _txtMouseX.Enabled = isMouseAction;
-            _txtMouseY.Enabled = isMouseAction;
-            _lblCaptureHint.Enabled = isMouseAction;
+            // 坐标输入框：鼠标动作 + 勾选坐标定位时才启用
+            _lblMouseX.Enabled = coordEnabled;
+            _lblMouseY.Enabled = coordEnabled;
+            _txtMouseX.Enabled = coordEnabled;
+            _txtMouseY.Enabled = coordEnabled;
+            // 坐标定位复选框：鼠标动作时可用
+            _chkUseMousePos.Enabled = isMouseAction;
+            // 捕获提示：鼠标动作 + 勾选坐标定位时显示
+            _lblCaptureHint.Enabled = coordEnabled;
+
+            // 切换到非鼠标动作时，自动取消勾选并注销热键
+            if (!isMouseAction && _chkUseMousePos != null && _chkUseMousePos.Checked)
+            {
+                _chkUseMousePos.Checked = false;
+            }
         }
 
         private void _cboType_SelectedIndexChanged(object sender, EventArgs e)
@@ -420,14 +459,14 @@ namespace JiuGeKeyClick
             {
                 _isRecording = true;
                 _txtKey.Text = "请按下键盘按键...";
-                pnlKeyHighlight.BackColor = Color.FromArgb(255, 230, 180);  // 橙黄色闪烁
                 _txtKey.ForeColor = Color.FromArgb(200, 80, 0);
             }
         }
 
         private void ActionEditDialog_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.Shift && e.KeyCode == Keys.Z)
+            if (_chkUseMousePos != null && _chkUseMousePos.Checked &&
+                e.Control && e.Shift && e.KeyCode == Keys.Z)
             {
                 CaptureMousePosition();
                 e.Handled = true;
@@ -542,7 +581,8 @@ namespace JiuGeKeyClick
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == (Keys.Control | Keys.Shift | Keys.Z))
+            if (_chkUseMousePos != null && _chkUseMousePos.Checked &&
+                keyData == (Keys.Control | Keys.Shift | Keys.Z))
             {
                 CaptureMousePosition();
                 return true;
@@ -552,7 +592,8 @@ namespace JiuGeKeyClick
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == NativeMethods.WM_HOTKEY && m.WParam.ToInt32() == NativeMethods.HOTKEY_ID_CAPTURE)
+            if (_chkUseMousePos != null && _chkUseMousePos.Checked &&
+                m.Msg == NativeMethods.WM_HOTKEY && m.WParam.ToInt32() == NativeMethods.HOTKEY_ID_CAPTURE)
             {
                 CaptureMousePosition();
                 m.Result = IntPtr.Zero;
@@ -564,18 +605,23 @@ namespace JiuGeKeyClick
 
         private void ActionEditDialog_Shown(object sender, EventArgs e)
         {
-            NativeMethods.RegisterHotKey(this.Handle, NativeMethods.HOTKEY_ID_CAPTURE,
-                NativeMethods.MOD_CONTROL | NativeMethods.MOD_SHIFT, (uint)Keys.Z);
+            // 如果动作已启用坐标定位，自动注册热键
+            if (_action.UseMousePos)
+            {
+                _chkUseMousePos.Checked = true;
+            }
         }
 
         private void ActionEditDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // 确保热键已注销
             NativeMethods.UnregisterHotKey(this.Handle, NativeMethods.HOTKEY_ID_CAPTURE);
         }
 
         protected override bool ProcessDialogKey(Keys keyData)
         {
-            if ((keyData & Keys.Control) != 0 && (keyData & Keys.Shift) != 0 && (keyData & Keys.KeyCode) == Keys.Z)
+            if (_chkUseMousePos != null && _chkUseMousePos.Checked &&
+                (keyData & Keys.Control) != 0 && (keyData & Keys.Shift) != 0 && (keyData & Keys.KeyCode) == Keys.Z)
             {
                 CaptureMousePosition();
                 return true;

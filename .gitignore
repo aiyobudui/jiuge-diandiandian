@@ -1,0 +1,31 @@
+# 编译输出
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.xml
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.log
+*.suo
+*.user
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.VisualState.xml
+
+# 系统文件
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# 图标缓存
+IconCache.db
+
+# 图片资源（不纳入版本管理）
+jiuge.png

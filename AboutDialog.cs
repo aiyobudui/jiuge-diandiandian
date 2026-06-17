@@ -25,7 +25,7 @@ namespace JiuGeKeyClick
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.BackColor = Color.FromArgb(250, 250, 250);
             this.Padding = new Padding(0);
-            this.ClientSize = new Size(440, 380);
+            this.ClientSize = new Size(440, 360);
             this.ControlBox = true;
 
             Font baseFont = new Font("微软雅黑", 9F);
@@ -83,29 +83,6 @@ namespace JiuGeKeyClick
             this.Controls.Add(lblAuthor);
 
             y += 36;
-
-            // ===== 项目描述 =====
-            Label lblDescLabel = new Label
-            {
-                Text = "简介：",
-                Location = new Point(leftMargin, y),
-                Size = new Size(labelWidth, 24),
-                Font = sectionFont,
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            this.Controls.Add(lblDescLabel);
-
-            Label lblDesc = new Label
-            {
-                Text = "轻量级键鼠宏工具，支持录制、编辑、循环执行键鼠动作序列。",
-                Location = new Point(contentX, y),
-                Size = new Size(300, 48),
-                Font = baseFont,
-                TextAlign = ContentAlignment.TopLeft
-            };
-            this.Controls.Add(lblDesc);
-
-            y += 64;
 
             // 分隔线2
             Panel sep2 = new Panel

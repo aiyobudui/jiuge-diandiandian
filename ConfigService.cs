@@ -46,8 +46,6 @@ namespace JiuGeKeyClick
                 int mouseX = int.TryParse(ReadIniValue($"Action{i}", "MouseX", "0"), out int mx) ? mx : 0;
                 int mouseY = int.TryParse(ReadIniValue($"Action{i}", "MouseY", "0"), out int my) ? my : 0;
                 bool useMousePos = bool.TryParse(ReadIniValue($"Action{i}", "UseMousePos", "False"), out bool ump) ? ump : false;
-                string group = ReadIniValue($"Action{i}", "Group", "");
-                string loopModeStr = ReadIniValue($"Action{i}", "LoopMode", "Once");
 
                 if (Enum.TryParse(typeStr, out ActionType type))
                 {
@@ -58,9 +56,6 @@ namespace JiuGeKeyClick
                     action.MouseX = mouseX;
                     action.MouseY = mouseY;
                     action.UseMousePos = useMousePos;
-                    action.Group = group;
-                    Enum.TryParse(loopModeStr, out LoopMode loopMode);
-                    action.LoopMode = loopMode;
                     actions.Add(action);
                 }
             }
@@ -88,8 +83,6 @@ namespace JiuGeKeyClick
                     WriteIniValue($"Action{i}", "MouseX", action.MouseX.ToString());
                     WriteIniValue($"Action{i}", "MouseY", action.MouseY.ToString());
                     WriteIniValue($"Action{i}", "UseMousePos", action.UseMousePos.ToString());
-                    WriteIniValue($"Action{i}", "Group", action.Group ?? "");
-                    WriteIniValue($"Action{i}", "LoopMode", action.LoopMode.ToString());
                 }
 
                 for (int i = actions.Count; i < oldCount; i++)
@@ -166,8 +159,6 @@ namespace JiuGeKeyClick
                 NativeMethods.WritePrivateProfileString($"Action{i}", "MouseX", a.MouseX.ToString(), filePath);
                 NativeMethods.WritePrivateProfileString($"Action{i}", "MouseY", a.MouseY.ToString(), filePath);
                 NativeMethods.WritePrivateProfileString($"Action{i}", "UseMousePos", a.UseMousePos.ToString(), filePath);
-                NativeMethods.WritePrivateProfileString($"Action{i}", "Group", a.Group ?? "", filePath);
-                NativeMethods.WritePrivateProfileString($"Action{i}", "LoopMode", a.LoopMode.ToString(), filePath);
             }
         }
 
@@ -221,12 +212,6 @@ namespace JiuGeKeyClick
                 len = NativeMethods.GetPrivateProfileString($"Action{i}", "UseMousePos", "False", buf, buf.Length, filePath);
                 bool useMousePos = bool.TryParse(new string(buf, 0, len), out bool ump) ? ump : false;
 
-                len = NativeMethods.GetPrivateProfileString($"Action{i}", "Group", "", buf, buf.Length, filePath);
-                string group = new string(buf, 0, len);
-
-                len = NativeMethods.GetPrivateProfileString($"Action{i}", "LoopMode", "Once", buf, buf.Length, filePath);
-                string loopModeStr = new string(buf, 0, len);
-
                 if (Enum.TryParse(typeStr, out ActionType type))
                 {
                     ActionItem action = new ActionItem(type, key, delay, enabled);
@@ -236,9 +221,6 @@ namespace JiuGeKeyClick
                     action.MouseX = mouseX;
                     action.MouseY = mouseY;
                     action.UseMousePos = useMousePos;
-                    action.Group = group;
-                    Enum.TryParse(loopModeStr, out LoopMode loopMode);
-                    action.LoopMode = loopMode;
                     actions.Add(action);
                 }
             }

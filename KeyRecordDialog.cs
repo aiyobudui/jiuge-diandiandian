@@ -17,7 +17,7 @@ namespace JiuGeKeyClick
         private void InitializeComponent()
         {
             this.Text = "设置启动快捷键";
-            this.Size = new Size(360, 180);
+            this.Size = new Size(300, 180);
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -39,7 +39,7 @@ namespace JiuGeKeyClick
             txtKey.Text = "等待按键...";
             txtKey.Font = new Font("Microsoft YaHei UI", 9);
             txtKey.Location = new Point(20, 55);
-            txtKey.Size = new Size(310, 26);
+            txtKey.Size = new Size(255, 26);
             _txtKey = txtKey;
             this.Controls.Add(txtKey);
 
@@ -47,7 +47,7 @@ namespace JiuGeKeyClick
             Button btnOK = new Button();
             btnOK.Text = "确定";
             btnOK.Size = new Size(75, 28);
-            btnOK.Location = new Point(165, 100);
+            btnOK.Location = new Point(105, 100);
             btnOK.Font = new Font("Microsoft YaHei UI", 9);
             btnOK.Click += (s, e) =>
             {
@@ -59,7 +59,7 @@ namespace JiuGeKeyClick
             Button btnCancel = new Button();
             btnCancel.Text = "取消";
             btnCancel.Size = new Size(75, 28);
-            btnCancel.Location = new Point(255, 100);
+            btnCancel.Location = new Point(195, 100);
             btnCancel.Font = new Font("Microsoft YaHei UI", 9);
             btnCancel.Click += (s, e) => this.DialogResult = DialogResult.Cancel;
             this.Controls.Add(btnCancel);
@@ -75,7 +75,6 @@ namespace JiuGeKeyClick
             {
                 SelectedKey = e.KeyCode.ToString();
                 _txtKey.Text = SelectedKey;
-                this.DialogResult = DialogResult.OK;
             }
             e.Handled = true;
         }

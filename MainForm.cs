@@ -94,13 +94,31 @@ namespace JiuGeKeyClick
             };
             countPanel.Controls.Add(btnAboutBottom);
 
-            // 右对齐关于按钮
+            // 帮助按钮
+            btnHelp = new Button
+            {
+                Text = "帮助",
+                Size = new Size(55, 23),
+                Font = defaultFont,
+                UseVisualStyleBackColor = true,
+                Margin = new Padding(0),
+            };
+            btnHelp.Click += (s, e) =>
+            {
+                using (HelpDialog dlg = new HelpDialog())
+                    dlg.ShowDialog(this);
+            };
+            countPanel.Controls.Add(btnHelp);
+
+            // 右对齐按钮
             countPanel.Resize += (s, e) =>
             {
                 btnAboutBottom.Location = new Point(countPanel.ClientSize.Width - btnAboutBottom.Width - 2, 4);
+                btnHelp.Location = new Point(btnAboutBottom.Left - btnHelp.Width - 4, 4);
             };
             // 初始化位置
             btnAboutBottom.Location = new Point(countPanel.ClientSize.Width - btnAboutBottom.Width - 2, 4);
+            btnHelp.Location = new Point(btnAboutBottom.Left - btnHelp.Width - 4, 4);
 
             mainPanel.Controls.Add(countPanel, 0, 3);
 
@@ -235,16 +253,20 @@ namespace JiuGeKeyClick
             dgvActions.Columns.Add("MousePos", "鼠标坐标");
             dgvActions.Columns.Add("Comment", "备注");
             dgvActions.Columns["Index"].FillWeight = 6;
-            dgvActions.Columns["Type"].FillWeight = 12;
-            dgvActions.Columns["Key"].FillWeight = 14;
+            dgvActions.Columns["Type"].FillWeight = 15;
+            dgvActions.Columns["Key"].FillWeight = 16;
             dgvActions.Columns["RepeatCount"].FillWeight = 10;
-            dgvActions.Columns["PreDelay"].FillWeight = 8;
-            dgvActions.Columns["Delay"].FillWeight = 8;
-            dgvActions.Columns["MousePos"].FillWeight = 14;
-            dgvActions.Columns["Comment"].FillWeight = 28;
+            dgvActions.Columns["PreDelay"].FillWeight = 12;
+            dgvActions.Columns["Delay"].FillWeight = 12;
+            dgvActions.Columns["MousePos"].FillWeight = 12;
+            dgvActions.Columns["Comment"].FillWeight = 25;
             // 所有列内容居中
             foreach (DataGridViewColumn col in dgvActions.Columns)
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // 所有列标题居中
+            foreach (DataGridViewColumn col in dgvActions.Columns)
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
             dgvActions.Columns["Index"].ReadOnly = true;
             dgvActions.Columns["Type"].ReadOnly = true;
@@ -389,6 +411,7 @@ namespace JiuGeKeyClick
         private ToolStripButton btnDown;
         private ToolStripButton btnClear;
         private Button btnChangeHotkey;
+        private Button btnHelp;
         private bool _initialized = false;
         private bool _isExiting = false;
 
@@ -598,6 +621,7 @@ namespace JiuGeKeyClick
                     _actions[index] = _actions[index - 1];
                     _actions[index - 1] = temp;
                     RefreshActionGrid();
+                    dgvActions.ClearSelection();
                     dgvActions.Rows[index - 1].Selected = true;
                 }
             }
@@ -614,6 +638,7 @@ namespace JiuGeKeyClick
                     _actions[index] = _actions[index + 1];
                     _actions[index + 1] = temp;
                     RefreshActionGrid();
+                    dgvActions.ClearSelection();
                     dgvActions.Rows[index + 1].Selected = true;
                 }
             }
@@ -658,7 +683,6 @@ namespace JiuGeKeyClick
                 {
                     try
                     {
-                        ConfigService.SaveConfig(_startKey, _actions);
                         ConfigService.SaveToFile(dlg.FileName, _startKey, _actions);
                         MessageBox.Show("配置已保存", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }

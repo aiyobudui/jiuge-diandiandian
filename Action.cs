@@ -10,13 +10,6 @@ namespace JiuGeKeyClick
         MouseMiddle
     }
 
-    public enum LoopMode
-    {
-        Once,
-        Repeat,
-        UntilStopped
-    }
-
     public class ActionItem
     {
         public ActionType Type { get; set; }
@@ -29,8 +22,6 @@ namespace JiuGeKeyClick
         public int MouseX { get; set; }
         public int MouseY { get; set; }
         public bool UseMousePos { get; set; }
-        public string Group { get; set; }
-        public LoopMode LoopMode { get; set; }
 
         public ActionItem()
         {
@@ -44,8 +35,6 @@ namespace JiuGeKeyClick
             MouseX = 0;
             MouseY = 0;
             UseMousePos = false;
-            Group = string.Empty;
-            LoopMode = LoopMode.Once;
         }
 
         public ActionItem(ActionType type, string key, int delay, bool enabled) : this()
@@ -66,8 +55,6 @@ namespace JiuGeKeyClick
                 MouseX = MouseX,
                 MouseY = MouseY,
                 UseMousePos = UseMousePos,
-                Group = Group,
-                LoopMode = LoopMode,
             };
         }
 
@@ -103,20 +90,6 @@ namespace JiuGeKeyClick
                         case ActionType.MouseMiddle: return "中键单击";
                         default: return string.Empty;
                     }
-                }
-            }
-        }
-
-        public string LoopModeDisplayName
-        {
-            get
-            {
-                switch (LoopMode)
-                {
-                    case LoopMode.Once: return "单次";
-                    case LoopMode.Repeat: return "循环";
-                    case LoopMode.UntilStopped: return "直到停止";
-                    default: return "单次";
                 }
             }
         }
